@@ -1,5 +1,4 @@
-(function(){
-	"use strict";
+const DBManager = function(){
 	
 	var __curtrans__ = "";
 	const TRANSACTION_TYPE = {
@@ -39,13 +38,13 @@
 	/************************************************************
 	*	Event Handlers
 	*************************************************************/
-	const handleUpgradeNeeded = function (event){
+	const handleUpgradeNeeded = function (){
 		const db = this.result;
 		
 		try{
 			const config = (__curtrans__) ? JSON.parse(__curtrans__) : {};
 			switch(config.type){
-				case TRANSACTION_TYPE.CREATE_STORE:
+				case TRANSACTION_TYPE.CREATE_STORE:{
 					const primaryKey = {};
 					
 					if(config.store.primaryKey && config.store.primaryKey.keyPath){
@@ -63,13 +62,14 @@
 					config.store.indexes.forEach(function(){
 						const index = store.createIndex("by_" + index.name, index.name, {unique: index.unique});
 					});
-				break;
-				case TRANSACTION_TYPE.DELETE_STORE:
+					break;
+				}
+				case TRANSACTION_TYPE.DELETE_STORE:{
 					db.deleteObjectStore(config.store.name);
-				break;
+					break;
+				}
 			}
-		}catch(error){
-			console.trace(error);
+		} catch(error) {
 			throw "DBManager exception: error reading transaction configuration.";
 		}
 	};
@@ -80,7 +80,6 @@
 	const DBManager = function(dbName){
 		if(!dbName){
 			throw "DBManager error: database name must be provided as parameter.";
-			return;
 		}
 		this.name = name;
 	};
@@ -117,13 +116,11 @@
 				if(!storeName){
 					connectedDB.close();
 					throw "DBManager exception: no store name provided.";
-					return;
 				}
 				
 				if(connectedDB.objectStoreNames.contains(storeName)){
 					connectedDB.close();
 					throw "DBManager exception: database " + dbName + "already contains a store named "+ storeName + ".";
-					return;
 				}
 				
 				const currentVersion = connectedDB.version;
@@ -158,7 +155,6 @@
 				if(!connectedDB.objectStoreNames.contains(storeName)){
 					connectedDB.close();
 					throw "DBManager exception: database " + dbName + " does not contain a stored named " + storeName + ".";
-					return;
 				}
 				
 				const currentVersion = connectedDB.version;
@@ -184,7 +180,6 @@
 				if(!connectedDB.objectStoreNames.contains(storeName)){
 					connectedDB.close();
 					throw "DBManager exception: database "+ dbName + "doesn't contain a store named "+ storeName + ".";
-					return;
 				}
 				const tx = connectedDB.transaction(storeName, "readwrite");
 				const store = tx.objectStore(storeName);
@@ -214,10 +209,9 @@
 		
 		return new Promise(function (resolve, reject){
 			openDatabase(dbName).then(function(connectedDB){
-				if(!conntectedDB.objectStoreNames.contains(storeName)){
+				if(!connectedDB.objectStoreNames.contains(storeName)){
 					connectedDB.close();
 					throw "DBManager exception: database "+ dbName + "doesn't contain a store named "+ storeName + ".";
-					return;
 				}
 				
 				const tx = connectedDB.transaction(storeName, "readwrite");
@@ -233,20 +227,19 @@
 	/*
 	*	Delete all records
 	*/
-	DBManager.prototype.deleteAllRecords = function (){
+	DBManager.prototype.deleteAllRecords = function (storeName){
 		var dbName = this.name;
 		
 		return new Promise(function (resolve, reject){
 			openDatabase(dbName).then(function(connectedDB){
-				if(!conntectedDB.objectStoreNames.contains(storeName)){
+				if(!connectedDB.objectStoreNames.contains(storeName)){
 					connectedDB.close();
 					throw "DBManager exception: database "+ dbName + "doesn't contain a store named "+ storeName + ".";
-					return;
 				}
 				
 				const tx = connectedDB.transaction(storeName, "readwrite");
 				const store =  tx.objectStore(storeName);
-				store.clear(key);
+				store.clear();
 				connectedDB.close();
 				resolve(TRANSACTION_TYPE.DONE);
 			}).catch(function(error){
@@ -257,15 +250,14 @@
 	/*
 	*	Search record
 	*/
-	DBManager.prototype.getRecords = function(){
+	DBManager.prototype.getRecords = function(storeName, config){
 		var dbName = this.name;
 		
 		return new Promise(function(resolve, reject){
 			openDatabase(dbName).then(function(connectedDB){
-				if(!conntectedDB.objectStoreNames.contains(storeName)){
+				if(!connectedDB.objectStoreNames.contains(storeName)){
 					connectedDB.close();
 					throw "DBManager exception: database "+ dbName + "doesn't contain a store named "+ storeName + ".";
-					return;
 				}
 				const tx =  connectedDB.transaction(storeName, "readonly");
 				const store = tx.objectStore(storeName);
@@ -297,6 +289,7 @@
 		});
 	};
 	
-	window.DBManager = DBManager;
-	
-})();
+	window.DBManager = DBManager;	
+};
+
+export default DBManager;

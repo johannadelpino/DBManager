@@ -7,8 +7,8 @@ const cleanWebpackPlugin = require("clean-webpack-plugin");
 module.exports = {
 	mode: "development",
 	entry:{
-		vendor: ["babel-polyfill"],
-		app: ",/src/db-manager.js"
+		polyfill: ["babel-polyfill"],
+		dbmanager: "src/db-manager.js"
 	},
 	devtool: "inline-source-map",
 	module:{
@@ -27,12 +27,12 @@ module.exports = {
 				test:/\.(png|jpg|gif|svg)$/,
 				exclude: /node_modules/,
 				loader: "url-loader?limit=10000&name=assets/images/[name]-[sha512:has:base64:7].[ext]"
-			}
+			},
 			{
 				test:/\.(eot|ttf|woff|woff2|otf)(\?v=[0-9]\.[0-9]\.[0-9])?&/,
 				exclude: /node_modules/,
 				loader: "file-loader?name=assets/fonts/[name].[ext]"
-			}
+			},
 			{
 				test:/\.html$/,
 				use:{
@@ -52,20 +52,19 @@ module.exports = {
 		modules: [
 			path.resolve("./"),
 			path.resolve("./node_modules")
-		],
-		alias:{},
-		output:{
-			path:path.resolve(__dirname,"build/"),
-			publicPath: "/",
-			filename: "[name].js",
-			chunkFilename: "[name].[chunkhash].chunk.js"
-		},
-		plugins: [
-			new cleanWebpackPlugin(['build']),
-			new htmlwebpackPlugin({
-				title:'DB Manager',
-				template: path.resolve(__dirname,'public/index.html')
-			})
 		]
-	}
-}
+	},
+	output:{
+		path:path.resolve(__dirname,"build/"),
+		publicPath: "/",
+		filename: "[name].js",
+		chunkFilename: "[name].[chunkhash].chunk.js"
+	},
+	plugins: [
+		new cleanWebpackPlugin(['build']),
+		new htmlWebpackPlugin({
+			title:'DB Manager',
+			template: path.resolve(__dirname,'public/index.html')
+		})
+	]
+};
