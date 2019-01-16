@@ -1,0 +1,24 @@
+{
+  "name": "dbmanager",
+  "version": "1.0.0",
+  "description": "wrapper of indexedDB API",
+  "main": "index.html",
+  "scripts": {
+    "test": "test",
+	"dev": "",
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johannadelpino/DBManager.git"
+  },
+  "keywords": [
+    "indexedDB",
+    "DBManager"
+  ],
+  "author": "Johanna Del Pino",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/johannadelpino/DBManager/issues"
+  },
+  "homepage": "https://github.com/johannadelpino/DBManager#readme"
+}
